@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Póliza {{ policy.number }}</title>
+</head>
+<body>
+    <h1>Póliza {{ policy.number }}</h1>
+    <p>Cliente: {{ policy.client.name }}</p>
+    <p>Tipo: {{ policy.policy_type.name }}</p>
+    <p>Estado: {{ policy.get_status_display }}</p>
+    <p>Fecha de inicio: {{ policy.start_date }}</p>
+    <p>Fecha de vencimiento: {{ policy.end_date }}</p>
+    <p>Prima: {{ policy.premium }}</p>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ client.name }}</title>
+</head>
+<body>
+    <h1>{{ client.name }}</h1>
+    <p>Email: {{ client.email }}</p>
+    <p>Teléfono: {{ client.phone }}</p>
+    <p>Documento: {{ client.document }}</p>
+
+    <h2>Pólizas</h2>
+    <ul>
+        {% for policy in policies %}
+            <li><a href="{% url 'policy-detail' policy.pk %}">{{ policy.number }} - {{ policy.get_status_display }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

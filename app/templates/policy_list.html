@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pólizas</title>
+</head>
+<body>
+    <h1>Pólizas</h1>
+
+    <ul>
+        {% for policy in policies %}
+            <li>{{ policy.number }} - {{ policy.client.name }} - {{ policy.get_status_display }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
