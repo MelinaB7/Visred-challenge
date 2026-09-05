@@ -11,7 +11,24 @@ class ClientForm(forms.ModelForm):
 class PolicyForm(forms.ModelForm):
     class Meta:
         model = Policy
-        fields = ["number", "client", "policy_type", "start_date", "end_date", "premium"]
+        fields = ["client", "policy_type", "start_date", "end_date", "premium"]
+        widgets = {
+            "start_date": forms.DateInput(attrs={"type": "date"}),
+            "end_date": forms.DateInput(attrs={"type": "date"}),
+        }
+    
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        active_types = PolicyType.objects.filter(is_active=True)
+
+        if self.instance.pk and self.instance.policy_type_id:
+            self.fields["policy_type"].queryset = active_types | PolicyType.objects.filter(
+                pk=self.instance.policy_type_id
+            )
+        else:
+            self.fields["policy_type"].queryset = active_types
+
 
     def clean(self):
         cleaned_data = super().clean()
