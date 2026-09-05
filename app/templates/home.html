@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <title>VISRED Challenge</title>
+    <meta charset="UTF-8">
+    <title>VISRED - Gestión de Pólizas</title>
 </head>
 <body>
-    <h1>Hello world 👋</h1>
-    <p>El scaffold está corriendo. Empezá a construir sobre <code>policies/</code>.</p>
+    <h1>Gestión de Pólizas</h1>
+
+    <ul>
+        <li><a href="{% url 'client-list' %}">Clientes</a></li>
+        <li><a href="{% url 'policy-list' %}">Pólizas</a></li>
+        <li><a href="{% url 'policy-type-list' %}">Tipos de Póliza</a></li>
+    </ul>
 </body>
 </html>

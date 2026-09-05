@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tipos de Póliza</title>
+</head>
+<body>
+    <h1>Tipos de Póliza</h1>
+
+    <a href="{% url 'policy-type-create' %}">Nuevo tipo</a>
+
+    <ul>
+        {% for policy_type in policy_types %}
+            <li>
+                {{ policy_type.name }} - {% if policy_type.is_active %}Activo{% else %}Inactivo{% endif %}
+                <a href="{% url 'policy-type-update' policy_type.pk %}">Editar</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

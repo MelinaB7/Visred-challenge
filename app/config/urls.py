@@ -3,7 +3,7 @@ from django.urls import path
 from policies.views import (
     home, client_list, client_create, client_update, client_delete,
     policy_list, policy_create, policy_update, policy_delete, client_detail, policy_detail, 
-    policy_renew
+    policy_renew, policy_type_list, policy_type_create, policy_type_update
 )
 
 
@@ -21,4 +21,7 @@ urlpatterns = [
     path("clients/<int:pk>/", client_detail, name="client-detail"),
     path("policies/<int:pk>/", policy_detail, name="policy-detail"),
     path("policies/<int:pk>/renew/", policy_renew, name="policy-renew"),
+    path("policy-types/", policy_type_list, name="policy-type-list"),
+    path("policy-types/new/", policy_type_create, name="policy-type-create"),
+    path("policy-types/<int:pk>/edit/", policy_type_update, name="policy-type-update"),
 ]

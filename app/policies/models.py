@@ -5,12 +5,13 @@ from django.utils import timezone
 
 
 class Client(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name="Nombre")
 
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, verbose_name="Email")
 
     phone = models.CharField(
         max_length=20,
+        verbose_name="Telefono",
         validators=[
             RegexValidator(
                 regex=r'^\+?[\d\s-]+$',
@@ -22,6 +23,7 @@ class Client(models.Model):
     document = models.CharField(
         max_length=20,
         unique=True,
+        verbose_name="Documento",
         validators=[
             RegexValidator(
                 regex=r'^\d+$',
@@ -35,8 +37,8 @@ class Client(models.Model):
 
 
 class PolicyType(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    is_active = models.BooleanField(default=True)
+    name = models.CharField(max_length=50, unique=True, verbose_name="Nombre")
+    is_active = models.BooleanField(default=True, verbose_name="Activo")
 
     def __str__(self):
         return self.name
@@ -48,25 +50,26 @@ class Policy(models.Model):
         EXPIRED = "expired", "Vencida"
         RENEWED = "renewed", "Renovada"
 
-    number = models.CharField(max_length=30, unique=True)
+    number = models.CharField(max_length=30, unique=True, verbose_name="Numero")
 
-    client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name="Cliente")
 
-    policy_type = models.ForeignKey(PolicyType, on_delete=models.PROTECT)
+    policy_type = models.ForeignKey(PolicyType, on_delete=models.PROTECT, verbose_name="Tipo de Póliza")
 
-    start_date = models.DateField()
+    start_date = models.DateField(verbose_name="Fecha de inicio")
 
-    end_date = models.DateField()
+    end_date = models.DateField(verbose_name="Fecha de vencimiento")
 
-    premium = models.DecimalField(max_digits=10, decimal_places=2)
+    premium = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Prima")
 
     status = models.CharField(
         max_length=10,
         choices=Status.choices,
-        default=Status.ACTIVE
+        default=Status.ACTIVE,
+        verbose_name="Estado"
     )
 
-    is_deleted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False, verbose_name="Eliminada")
 
 
     def refresh_status(self):

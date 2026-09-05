@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import ProtectedError, Q
-from .models import Client, Policy
-from .forms import ClientForm, PolicyForm
+from .models import Client, Policy, PolicyType
+from .forms import ClientForm, PolicyForm, PolicyTypeForm
 
 
 def home(request):
@@ -144,3 +144,36 @@ def policy_renew(request, pk):
         form = PolicyForm(instance=new_policy)
 
     return render(request, "policy_form.html", {"form": form, "renewing": old_policy})
+
+
+# ABM de PolicyType
+
+def policy_type_list(request):
+    policy_types = PolicyType.objects.all()
+    return render(request, "policy_type_list.html", {"policy_types": policy_types})
+
+
+def policy_type_create(request):
+    if request.method == "POST":
+        form = PolicyTypeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("policy-type-list")
+    else:
+        form = PolicyTypeForm()
+
+    return render(request, "policy_type_form.html", {"form": form})
+
+
+def policy_type_update(request, pk):
+    policy_type = get_object_or_404(PolicyType, pk=pk)
+
+    if request.method == "POST":
+        form = PolicyTypeForm(request.POST, instance=policy_type)
+        if form.is_valid():
+            form.save()
+            return redirect("policy-type-list")
+    else:
+        form = PolicyTypeForm(instance=policy_type)
+
+    return render(request, "policy_type_form.html", {"form": form})

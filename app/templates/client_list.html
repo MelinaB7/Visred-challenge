@@ -7,9 +7,15 @@
 <body>
     <h1>Clientes</h1>
 
+    <a href="{% url 'client-create' %}">Nuevo cliente</a>
+
     <ul>
         {% for client in clients %}
-            <li>{{ client.name }} - {{ client.email }}</li>
+            <li>
+                <a href="{% url 'client-detail' client.pk %}">{{ client.name }}</a> - {{ client.email }}
+                <a href="{% url 'client-update' client.pk %}">Editar</a>
+                <a href="{% url 'client-delete' client.pk %}">Eliminar</a>
+            </li>
         {% endfor %}
     </ul>
 </body>

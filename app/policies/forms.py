@@ -1,5 +1,5 @@
 from django import forms
-from .models import Client, Policy
+from .models import Client, Policy, PolicyType
 
 
 class ClientForm(forms.ModelForm):
@@ -22,3 +22,13 @@ class PolicyForm(forms.ModelForm):
             raise forms.ValidationError("La fecha de inicio debe ser anterior a la fecha de vencimiento.")
 
         return cleaned_data
+
+
+class PolicyTypeForm(forms.ModelForm):
+    class Meta:
+        model = PolicyType
+        fields = ["name", "is_active"]
+
+    def clean_name(self):
+        name = self.cleaned_data.get("name")
+        return name.strip().capitalize()

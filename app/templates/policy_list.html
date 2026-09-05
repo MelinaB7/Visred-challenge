@@ -7,9 +7,15 @@
 <body>
     <h1>Pólizas</h1>
 
+    <a href="{% url 'policy-create' %}">Nueva póliza</a>
+
     <ul>
         {% for policy in policies %}
-            <li>{{ policy.number }} - {{ policy.client.name }} - {{ policy.get_status_display }}</li>
+            <li>
+                <a href="{% url 'policy-detail' policy.pk %}">{{ policy.number }}</a> - {{ policy.client.name }} - {{ policy.get_status_display }}
+                <a href="{% url 'policy-update' policy.pk %}">Editar</a>
+                <a href="{% url 'policy-delete' policy.pk %}">Eliminar</a>
+            </li>
         {% endfor %}
     </ul>
 </body>
