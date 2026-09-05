@@ -16,5 +16,11 @@
     {% if policy.status != "renewed" %}
         <a href="{% url 'policy-renew' policy.pk %}">Renovar</a>
     {% endif %}
+
+
+    {% if policy.renewed_from %}
+        <a href="{% url 'policy-detail' policy.renewed_from.pk %}">Ver póliza anterior ({{ policy.renewed_from.number }})</a>
+    {% endif %}
+
 </body>
 </html>
