@@ -50,7 +50,7 @@ class Policy(models.Model):
         EXPIRED = "expired", "Vencida"
         RENEWED = "renewed", "Renovada"
 
-    number = models.CharField(max_length=30, unique=True, verbose_name="Numero")
+    number = models.CharField(max_length=10, unique=True, verbose_name="Numero", blank=True)
 
     client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name="Cliente")
 
@@ -71,28 +71,59 @@ class Policy(models.Model):
 
     is_deleted = models.BooleanField(default=False, verbose_name="Eliminada")
 
+    renewed_from = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="renewals",
+        verbose_name="Renovada desde"
+    )
+
 
     def refresh_status(self):
         if self.status == self.Status.ACTIVE and self.end_date < timezone.now().date():
             self.status = self.Status.EXPIRED
             self.save()
+            
+    @classmethod
+    def _generate_next_number(cls, prefix):
+        last_policy = (
+            cls.objects.filter(number__startswith=prefix)
+            .order_by("-number")
+            .first()
+        )
+        if last_policy:
+            next_sequence = int(last_policy.number[len(prefix):]) + 1
+        else:
+            next_sequence = 1
 
+        candidate = f"{prefix}{next_sequence:05d}"
+        while cls.objects.filter(number=candidate).exists():
+            next_sequence += 1
+            candidate = f"{prefix}{next_sequence:05d}"
+
+        return candidate
+
+    def save(self, *args, **kwargs):
+        if not self.number:
+            prefix = "R" if self.renewed_from else "P"
+            self.number = self._generate_next_number(prefix)
+        super().save(*args, **kwargs)
 
     def build_renewal(self):
         new_start_date = self.end_date + datetime.timedelta(days=1)
         new_end_date = new_start_date.replace(year=new_start_date.year + 1)
-        new_number = f"{self.number}-R-{timezone.now().date().isoformat()}"
 
         return Policy(
-            number=new_number,
             client=self.client,
             policy_type=self.policy_type,
             start_date=new_start_date,
             end_date=new_end_date,
             premium=self.premium,
             status=Policy.Status.ACTIVE,
+            renewed_from=self,
         )
-
 
     def __str__(self):
         return f"{self.number} - {self.client.name}"
