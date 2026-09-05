@@ -59,10 +59,10 @@ def client_delete(request, pk):
 # ABM de Policy
 
 def policy_list(request):
-    for policy in Policy.objects.filter(status=Policy.Status.ACTIVE):
+    for policy in Policy.objects.filter(status=Policy.Status.ACTIVE, is_deleted=False):
         policy.refresh_status()
 
-    policies = Policy.objects.all()
+    policies = Policy.objects.filter(is_deleted=False)
 
     status = request.GET.get("status")
     if status:
@@ -108,7 +108,8 @@ def policy_delete(request, pk):
     policy = get_object_or_404(Policy, pk=pk)
 
     if request.method == "POST":
-        policy.delete()
+        policy.is_deleted = True
+        policy.save()
         return redirect("policy-list")
 
     return render(request, "policy_confirm_delete.html", {"policy": policy})
@@ -126,5 +127,20 @@ def policy_detail(request, pk):
     return render(request, "policy_detail.html", {"policy": policy})
 
 
-# Listado Filtrable
+# Renovación de pólizas
 
+def policy_renew(request, pk):
+    old_policy = get_object_or_404(Policy, pk=pk)
+    new_policy = old_policy.build_renewal()
+
+    if request.method == "POST":
+        form = PolicyForm(request.POST, instance=new_policy)
+        if form.is_valid():
+            form.save()
+            old_policy.status = Policy.Status.RENEWED
+            old_policy.save()
+            return redirect("policy-detail", pk=form.instance.pk)
+    else:
+        form = PolicyForm(instance=new_policy)
+
+    return render(request, "policy_form.html", {"form": form, "renewing": old_policy})

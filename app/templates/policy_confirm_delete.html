@@ -7,6 +7,11 @@
 <body>
     <h1>¿Eliminar la póliza {{ policy.number }}?</h1>
 
+    <p>Cliente: {{ policy.client.name }}</p>
+    <p>Tipo: {{ policy.policy_type.name }}</p>
+    <p>Estado: {{ policy.get_status_display }}</p>
+    <p>Fecha de vencimiento: {{ policy.end_date }}</p>
+
     <form method="post">
         {% csrf_token %}
         <button type="submit">Confirmar eliminación</button>

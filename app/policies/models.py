@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.core.validators import RegexValidator
 from django.utils import timezone
@@ -65,10 +66,30 @@ class Policy(models.Model):
         default=Status.ACTIVE
     )
 
+    is_deleted = models.BooleanField(default=False)
+
+
     def refresh_status(self):
         if self.status == self.Status.ACTIVE and self.end_date < timezone.now().date():
             self.status = self.Status.EXPIRED
             self.save()
+
+
+    def build_renewal(self):
+        new_start_date = self.end_date + datetime.timedelta(days=1)
+        new_end_date = new_start_date.replace(year=new_start_date.year + 1)
+        new_number = f"{self.number}-R-{timezone.now().date().isoformat()}"
+
+        return Policy(
+            number=new_number,
+            client=self.client,
+            policy_type=self.policy_type,
+            start_date=new_start_date,
+            end_date=new_end_date,
+            premium=self.premium,
+            status=Policy.Status.ACTIVE,
+        )
+
 
     def __str__(self):
         return f"{self.number} - {self.client.name}"

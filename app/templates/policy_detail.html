@@ -12,5 +12,9 @@
     <p>Fecha de inicio: {{ policy.start_date }}</p>
     <p>Fecha de vencimiento: {{ policy.end_date }}</p>
     <p>Prima: {{ policy.premium }}</p>
+
+    {% if policy.status != "renewed" %}
+        <a href="{% url 'policy-renew' policy.pk %}">Renovar</a>
+    {% endif %}
 </body>
 </html>
