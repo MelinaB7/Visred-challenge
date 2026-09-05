@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import ProtectedError
+from django.db.models import ProtectedError, Q
 from .models import Client, Policy
 from .forms import ClientForm, PolicyForm
 
@@ -59,7 +59,21 @@ def client_delete(request, pk):
 # ABM de Policy
 
 def policy_list(request):
+    for policy in Policy.objects.filter(status=Policy.Status.ACTIVE):
+        policy.refresh_status()
+
     policies = Policy.objects.all()
+
+    status = request.GET.get("status")
+    if status:
+        policies = policies.filter(status=status)
+
+    search = request.GET.get("search")
+    if search:
+        policies = policies.filter(
+            Q(number__icontains=search) | Q(client__name__icontains=search)
+        )
+
     return render(request, "policy_list.html", {"policies": policies})
 
 
@@ -110,3 +124,7 @@ def client_detail(request, pk):
 def policy_detail(request, pk):
     policy = get_object_or_404(Policy, pk=pk)
     return render(request, "policy_detail.html", {"policy": policy})
+
+
+# Listado Filtrable
+

@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.utils import timezone
 
 
 class Client(models.Model):
@@ -27,7 +28,7 @@ class Client(models.Model):
             )
         ]
     )
-    
+
     def __str__(self):
         return self.name
 
@@ -35,7 +36,6 @@ class Client(models.Model):
 class PolicyType(models.Model):
     name = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)
-
 
     def __str__(self):
         return self.name
@@ -64,6 +64,11 @@ class Policy(models.Model):
         choices=Status.choices,
         default=Status.ACTIVE
     )
+
+    def refresh_status(self):
+        if self.status == self.Status.ACTIVE and self.end_date < timezone.now().date():
+            self.status = self.Status.EXPIRED
+            self.save()
 
     def __str__(self):
         return f"{self.number} - {self.client.name}"
