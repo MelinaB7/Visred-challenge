@@ -16,15 +16,18 @@
     </div>
 </div>
 
-{% if policy.renewed_from %}
-    <a href="{% url 'policy-detail' policy.renewed_from.pk %}" class="btn btn-outline-secondary">Ver póliza anterior ({{ policy.renewed_from.number }})</a>
-{% endif %}
 
-{% if policy.status == "renewed" %}
-    <a href="{% url 'policy-detail' policy.get_current_policy.pk %}" class="btn btn-outline-primary">Ver póliza vigente ({{ policy.get_current_policy.number }})</a>
-{% endif %}
+<div class="d-flex flex-wrap gap-2">
+    {% if policy.renewed_from %}
+        <a href="{% url 'policy-detail' policy.renewed_from.pk %}" class="btn btn-outline-secondary">Ver póliza anterior ({{ policy.renewed_from.number }})</a>
+    {% endif %}
 
-{% if policy.status != "renewed" %}
-    <a href="{% url 'policy-renew' policy.pk %}" class="btn btn-primary">Renovar</a>
-{% endif %}
+    {% if policy.status == "renewed" %}
+        <a href="{% url 'policy-detail' policy.get_current_policy.pk %}" class="btn btn-outline-primary">Ver póliza vigente ({{ policy.get_current_policy.number }})</a>
+    {% endif %}
+
+    {% if policy.status != "renewed" %}
+        <a href="{% url 'policy-renew' policy.pk %}" class="btn btn-primary">Renovar</a>
+    {% endif %}
+</div>
 {% endblock %}

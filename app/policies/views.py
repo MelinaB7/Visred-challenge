@@ -2,19 +2,23 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import ProtectedError, Q
 from .models import Client, Policy, PolicyType
 from .forms import ClientForm, PolicyForm, PolicyTypeForm
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
-
+@login_required
 def home(request):
     """Placeholder home view. Replace with the real app."""
     return render(request, "home.html")
 
 #ABM de Client
 
+@login_required
 def client_list(request):
     clients = Client.objects.all()
     return render(request, "client_list.html", {"clients": clients})
 
 
+@login_required
 def client_create(request):
     if request.method == "POST":
         form = ClientForm(request.POST)
@@ -27,6 +31,7 @@ def client_create(request):
     return render(request, "client_form.html", {"form": form})
 
 
+@login_required
 def client_update(request, pk):
     client = get_object_or_404(Client, pk=pk)
 
@@ -41,23 +46,24 @@ def client_update(request, pk):
     return render(request, "client_form.html", {"form": form})
 
 
+@login_required
 def client_delete(request, pk):
     client = get_object_or_404(Client, pk=pk)
 
     if request.method == "POST":
         try:
+            client_name = client.name
             client.delete()
-            return redirect("client-list")
+            messages.success(request, f"Cliente {client_name} eliminado correctamente.")
         except ProtectedError:
-            return render(request, "client_confirm_delete.html", {
-                "client": client,
-                "error": "No se puede eliminar: este cliente tiene pólizas asociadas."
-            })
+            messages.error(request, f"No se puede eliminar a {client.name}: tiene pólizas asociadas.")
 
-    return render(request, "client_confirm_delete.html", {"client": client})
+    return redirect("client-list")
+
 
 # ABM de Policy
 
+@login_required
 def policy_list(request):
     for policy in Policy.objects.filter(status=Policy.Status.ACTIVE, is_deleted=False):
         policy.refresh_status()
@@ -77,7 +83,7 @@ def policy_list(request):
     return render(request, "policy_list.html", {"policies": policies})
 
 
-
+@login_required
 def policy_create(request):
     if request.method == "POST":
         form = PolicyForm(request.POST)
@@ -90,6 +96,7 @@ def policy_create(request):
     return render(request, "policy_form.html", {"form": form})
 
 
+@login_required
 def policy_update(request, pk):
     policy = get_object_or_404(Policy, pk=pk)
 
@@ -104,24 +111,28 @@ def policy_update(request, pk):
     return render(request, "policy_form.html", {"form": form})
 
 
+@login_required
 def policy_delete(request, pk):
     policy = get_object_or_404(Policy, pk=pk)
 
     if request.method == "POST":
         policy.is_deleted = True
         policy.save()
-        return redirect("policy-list")
+        messages.success(request, f"Póliza {policy.number} eliminada correctamente.")
 
-    return render(request, "policy_confirm_delete.html", {"policy": policy})
+    return redirect("policy-list")
 
 # Detalle de Client y Policy
 
+
+@login_required
 def client_detail(request, pk):
     client = get_object_or_404(Client, pk=pk)
     policies = client.policy_set.all()
     return render(request, "client_detail.html", {"client": client, "policies": policies})
 
 
+@login_required
 def policy_detail(request, pk):
     policy = get_object_or_404(Policy, pk=pk)
     return render(request, "policy_detail.html", {"policy": policy})
@@ -129,6 +140,7 @@ def policy_detail(request, pk):
 
 # Renovación de pólizas
 
+@login_required
 def policy_renew(request, pk):
     old_policy = get_object_or_404(Policy, pk=pk)
     new_policy = old_policy.build_renewal()
@@ -148,11 +160,13 @@ def policy_renew(request, pk):
 
 # ABM de PolicyType
 
+@login_required
 def policy_type_list(request):
     policy_types = PolicyType.objects.all()
     return render(request, "policy_type_list.html", {"policy_types": policy_types})
 
 
+@login_required
 def policy_type_create(request):
     if request.method == "POST":
         form = PolicyTypeForm(request.POST)
@@ -165,6 +179,7 @@ def policy_type_create(request):
     return render(request, "policy_type_form.html", {"form": form})
 
 
+@login_required
 def policy_type_update(request, pk):
     policy_type = get_object_or_404(PolicyType, pk=pk)
 

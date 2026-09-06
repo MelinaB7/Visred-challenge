@@ -9,6 +9,7 @@
 </div>
 
 <div class="card">
+    <div class="table-responsive">
     <table class="table table-vcenter card-table">
         <thead>
             <tr>
@@ -22,13 +23,16 @@
                 <tr>
                     <td><a href="{% url 'client-detail' client.pk %}">{{ client.name }}</a></td>
                     <td>{{ client.email }}</td>
-                    <td class="text-nowrap">
-                        <a href="{% url 'client-update' client.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
-                        <a href="{% url 'client-delete' client.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            <a href="{% url 'client-update' client.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{% url 'client-delete' client.pk %}', '¿Eliminar a {{ client.name|escapejs }}?')">Eliminar</button>
+                        </div>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 {% endblock %}
