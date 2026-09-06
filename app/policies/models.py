@@ -85,6 +85,13 @@ class Policy(models.Model):
         if self.status == self.Status.ACTIVE and self.end_date < timezone.now().date():
             self.status = self.Status.EXPIRED
             self.save()
+        
+
+    def get_current_policy(self):
+        current = self
+        while current.renewals.exists():
+            current = current.renewals.first()
+        return current
             
     @classmethod
     def _generate_next_number(cls, prefix):
@@ -105,11 +112,12 @@ class Policy(models.Model):
 
         return candidate
 
+
     def save(self, *args, **kwargs):
         if not self.number:
-            prefix = "R" if self.renewed_from else "P"
-            self.number = self._generate_next_number(prefix)
+            self.number = self._generate_next_number("P")
         super().save(*args, **kwargs)
+
 
     def build_renewal(self):
         new_start_date = self.end_date + datetime.timedelta(days=1)

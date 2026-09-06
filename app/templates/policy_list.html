@@ -8,6 +8,27 @@
     <a href="{% url 'policy-create' %}" class="btn btn-primary">Nueva póliza</a>
 </div>
 
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+            <form method="get" class="d-flex gap-2">
+                <input type="hidden" name="status" value="{{ request.GET.status }}">
+                <input type="text" name="search" value="{{ request.GET.search|default:'' }}" class="form-control" style="min-width: 280px;" placeholder="Buscar por número o cliente">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+                {% if request.GET.search or request.GET.status %}
+                <a href="{% url 'policy-list' %}" class="btn btn-outline-secondary flex-shrink-0">Limpiar filtros</a>
+                {% endif %}
+            </form>
+            <div class="btn-group" role="group">
+                <a href="?status=&search={{ request.GET.search|default:'' }}" class="btn btn-outline-secondary {% if not request.GET.status %}active{% endif %}">Todas</a>
+                <a href="?status=active&search={{ request.GET.search|default:'' }}" class="btn btn-outline-secondary {% if request.GET.status == 'active' %}active{% endif %}">Vigente</a>
+                <a href="?status=expired&search={{ request.GET.search|default:'' }}" class="btn btn-outline-secondary {% if request.GET.status == 'expired' %}active{% endif %}">Vencida</a>
+                <a href="?status=renewed&search={{ request.GET.search|default:'' }}" class="btn btn-outline-secondary {% if request.GET.status == 'renewed' %}active{% endif %}">Renovada</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card">
     <table class="table table-vcenter card-table">
         <thead>
@@ -21,10 +42,11 @@
         <tbody>
             {% for policy in policies %}
                 <tr>
-                    <td><a href="{% url 'policy-detail' policy.pk %}">{{ policy.number }}</a></td>
+                    <td>{{ policy.number }}</td>
                     <td>{{ policy.client.name }}</td>
                     <td>{{ policy.get_status_display }}</td>
                     <td class="text-nowrap">
+                        <a href="{% url 'policy-detail' policy.pk %}" class="btn btn-sm btn-outline-primary">Detalle</a>
                         <a href="{% url 'policy-update' policy.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a>
                         <a href="{% url 'policy-delete' policy.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
                     </td>
