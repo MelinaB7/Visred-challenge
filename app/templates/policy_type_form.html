@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Tipo de Póliza</title>
-</head>
-<body>
-    <h1>Tipo de Póliza</h1>
+{% extends "base.html" %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Guardar</button>
-    </form>
-</body>
-</html>
+{% block title %}Tipo de Póliza{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">Tipo de Póliza</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

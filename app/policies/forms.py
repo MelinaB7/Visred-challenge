@@ -6,6 +6,12 @@ class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields = ["name", "email", "phone", "document"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "phone": forms.TextInput(attrs={"class": "form-control"}),
+            "document": forms.TextInput(attrs={"class": "form-control"}),
+        }
 
 
 class PolicyForm(forms.ModelForm):
@@ -13,10 +19,12 @@ class PolicyForm(forms.ModelForm):
         model = Policy
         fields = ["client", "policy_type", "start_date", "end_date", "premium"]
         widgets = {
-            "start_date": forms.DateInput(attrs={"type": "date"}),
-            "end_date": forms.DateInput(attrs={"type": "date"}),
+            "client": forms.Select(attrs={"class": "form-select"}),
+            "policy_type": forms.Select(attrs={"class": "form-select"}),
+            "start_date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "end_date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "premium": forms.NumberInput(attrs={"class": "form-control"}),
         }
-    
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,7 +36,6 @@ class PolicyForm(forms.ModelForm):
             )
         else:
             self.fields["policy_type"].queryset = active_types
-
 
     def clean(self):
         cleaned_data = super().clean()
@@ -45,6 +52,10 @@ class PolicyTypeForm(forms.ModelForm):
     class Meta:
         model = PolicyType
         fields = ["name", "is_active"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "is_active": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
 
     def clean_name(self):
         name = self.cleaned_data.get("name")

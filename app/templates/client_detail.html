@@ -1,20 +1,29 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ client.name }}</title>
-</head>
-<body>
-    <h1>{{ client.name }}</h1>
-    <p>Email: {{ client.email }}</p>
-    <p>Teléfono: {{ client.phone }}</p>
-    <p>Documento: {{ client.document }}</p>
+{% extends "base.html" %}
 
-    <h2>Pólizas</h2>
-    <ul>
-        {% for policy in policies %}
-            <li><a href="{% url 'policy-detail' policy.pk %}">{{ policy.number }} - {{ policy.get_status_display }}</a></li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% block title %}{{ client.name }}{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">{{ client.name }}</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <p><strong>Email:</strong> {{ client.email }}</p>
+        <p><strong>Teléfono:</strong> {{ client.phone }}</p>
+        <p><strong>Documento:</strong> {{ client.document }}</p>
+    </div>
+</div>
+
+<h2 class="mb-3">Pólizas</h2>
+<div class="card">
+    <table class="table table-vcenter card-table">
+        <tbody>
+            {% for policy in policies %}
+                <tr>
+                    <td><a href="{% url 'policy-detail' policy.pk %}">{{ policy.number }}</a></td>
+                    <td>{{ policy.get_status_display }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,26 +1,26 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Póliza {{ policy.number }}</title>
-</head>
-<body>
-    <h1>Póliza {{ policy.number }}</h1>
-    <p>Cliente: {{ policy.client.name }}</p>
-    <p>Tipo: {{ policy.policy_type.name }}</p>
-    <p>Estado: {{ policy.get_status_display }}</p>
-    <p>Fecha de inicio: {{ policy.start_date }}</p>
-    <p>Fecha de vencimiento: {{ policy.end_date }}</p>
-    <p>Prima: {{ policy.premium }}</p>
+{% extends "base.html" %}
 
-    {% if policy.status != "renewed" %}
-        <a href="{% url 'policy-renew' policy.pk %}">Renovar</a>
-    {% endif %}
+{% block title %}Póliza {{ policy.number }}{% endblock %}
 
+{% block content %}
+<h1 class="mb-3">Póliza {{ policy.number }}</h1>
 
-    {% if policy.renewed_from %}
-        <a href="{% url 'policy-detail' policy.renewed_from.pk %}">Ver póliza anterior ({{ policy.renewed_from.number }})</a>
-    {% endif %}
+<div class="card mb-3">
+    <div class="card-body">
+        <p><strong>Cliente:</strong> {{ policy.client.name }}</p>
+        <p><strong>Tipo:</strong> {{ policy.policy_type.name }}</p>
+        <p><strong>Estado:</strong> {{ policy.get_status_display }}</p>
+        <p><strong>Fecha de inicio:</strong> {{ policy.start_date }}</p>
+        <p><strong>Fecha de vencimiento:</strong> {{ policy.end_date }}</p>
+        <p><strong>Prima:</strong> {{ policy.premium }}</p>
+    </div>
+</div>
 
-</body>
-</html>
+{% if policy.renewed_from %}
+    <a href="{% url 'policy-detail' policy.renewed_from.pk %}" class="btn btn-outline-secondary">Ver póliza anterior ({{ policy.renewed_from.number }})</a>
+{% endif %}
+
+{% if policy.status != "renewed" %}
+    <a href="{% url 'policy-renew' policy.pk %}" class="btn btn-primary">Renovar</a>
+{% endif %}
+{% endblock %}

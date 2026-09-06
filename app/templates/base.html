@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}VISRED - Gestión de Pólizas{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'tabler/css/tabler.min.css' %}">
+</head>
+<body>
+    <header class="navbar navbar-expand-md navbar-light d-print-none">
+        <div class="container-xl">
+            <a href="{% url 'home' %}" class="navbar-brand">VISRED</a>
+            <div class="navbar-nav flex-row">
+                <div class="nav-item">
+                    <a href="{% url 'client-list' %}" class="nav-link">Clientes</a>
+                </div>
+                <div class="nav-item">
+                    <a href="{% url 'policy-list' %}" class="nav-link">Pólizas</a>
+                </div>
+                <div class="nav-item">
+                    <a href="{% url 'policy-type-list' %}" class="nav-link">Tipos de póliza</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-wrapper">
+        <div class="container-xl">
+            <div class="page-body">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+</body>
+</html>

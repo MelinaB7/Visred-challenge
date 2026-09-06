@@ -1,20 +1,21 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Eliminar Póliza</title>
-</head>
-<body>
-    <h1>¿Eliminar la póliza {{ policy.number }}?</h1>
+{% extends "base.html" %}
 
-    <p>Cliente: {{ policy.client.name }}</p>
-    <p>Tipo: {{ policy.policy_type.name }}</p>
-    <p>Estado: {{ policy.get_status_display }}</p>
-    <p>Fecha de vencimiento: {{ policy.end_date }}</p>
+{% block title %}Eliminar Póliza{% endblock %}
 
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Confirmar eliminación</button>
-    </form>
-</body>
-</html>
+{% block content %}
+<h1 class="mb-3">¿Eliminar la póliza {{ policy.number }}?</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p><strong>Cliente:</strong> {{ policy.client.name }}</p>
+        <p><strong>Tipo:</strong> {{ policy.policy_type.name }}</p>
+        <p><strong>Estado:</strong> {{ policy.get_status_display }}</p>
+        <p><strong>Fecha de vencimiento:</strong> {{ policy.end_date }}</p>
+    </div>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+</form>
+{% endblock %}

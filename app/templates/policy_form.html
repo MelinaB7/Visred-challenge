@@ -1,21 +1,22 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>{% if renewing %}Renovar Póliza{% else %}Póliza{% endif %}</title>
-</head>
-<body>
-    {% if renewing %}
-        <h1>Renovar póliza {{ renewing.number }}</h1>
-        <p>Revisá los datos calculados y confirmá, o modificá lo que necesites (por ejemplo, la prima).</p>
-    {% else %}
-        <h1>Nueva Póliza</h1>
-    {% endif %}
+{% extends "base.html" %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Guardar</button>
-    </form>
-</body>
-</html>
+{% block title %}{% if renewing %}Renovar Póliza{% else %}Póliza{% endif %}{% endblock %}
+
+{% block content %}
+{% if renewing %}
+    <h1 class="mb-2">Renovar póliza {{ renewing.number }}</h1>
+    <p class="text-secondary mb-3">Revisá los datos calculados y confirmá, o modificá lo que necesites (por ejemplo, la prima).</p>
+{% else %}
+    <h1 class="mb-3">Nueva Póliza</h1>
+{% endif %}
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

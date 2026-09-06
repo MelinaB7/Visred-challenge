@@ -1,21 +1,37 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Tipos de Póliza</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Tipos de Póliza{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center mb-3">
     <h1>Tipos de Póliza</h1>
+    <a href="{% url 'policy-type-create' %}" class="btn btn-primary">Nuevo tipo</a>
+</div>
 
-    <a href="{% url 'policy-type-create' %}">Nuevo tipo</a>
-
-    <ul>
-        {% for policy_type in policy_types %}
-            <li>
-                {{ policy_type.name }} - {% if policy_type.is_active %}Activo{% else %}Inactivo{% endif %}
-                <a href="{% url 'policy-type-update' policy_type.pk %}">Editar</a>
-            </li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+<div class="card">
+    <table class="table table-vcenter card-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Estado</th>
+                <th class="w-1"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for policy_type in policy_types %}
+                <tr>
+                    <td>{{ policy_type.name }}</td>
+                    <td>
+                        {% if policy_type.is_active %}
+                            <span class="badge bg-success-lt">Activo</span>
+                        {% else %}
+                            <span class="badge bg-secondary-lt">Inactivo</span>
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'policy-type-update' policy_type.pk %}" class="btn btn-sm btn-outline-secondary">Editar</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
