@@ -32,6 +32,7 @@ Mini-sistema interno para que un asesor administre clientes y las pólizas asoci
    docker compose up --build
    ```
 Las migraciones se aplican automáticamente al levantar el proyecto.
+
 4. Crear un superusuario para poder loguearte:
    ```bash
    docker compose exec web python manage.py createsuperuser
