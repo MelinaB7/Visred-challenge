@@ -72,7 +72,7 @@ El mismo listado filtrable de pólizas (por estado y por búsqueda de número/cl
 ### Inicio de sesión
 Decidí sumar un panel de inicio de sesión y protegí las rutas de la aplicación: solo se puede acceder a ellas si primero se inició sesión.
 
-### Qué dejaría para una segunda iteración
+### Qué dejaría para una segunda iteración
 - Subcategorías dentro de los tipos de póliza — sé que en la vida real cada tipo (auto, hogar, vida...) tiene varias opciones dentro, y no llegué a modelar ese nivel de detalle.
 - Filtro/búsqueda en el listado de clientes — la consigna solo lo pide para pólizas; lo dejé sin agregar por tiempo.
 - Mover el cálculo de "vencida" a una tarea programada, para no depender de que alguien visite el listado.
