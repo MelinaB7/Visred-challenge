@@ -11,19 +11,15 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
-            <form method="get" class="d-flex gap-2">
-                <input type="hidden" name="status" value="{{ request.GET.status }}">
-                <input type="text" name="search" value="{{ request.GET.search|default:'' }}" class="form-control" style="min-width: 280px;" placeholder="Buscar por número o cliente">
-                <button type="submit" class="btn btn-primary">Buscar</button>
-                {% if request.GET.search or request.GET.status %}
-                <a href="{% url 'policy-list' %}" class="btn btn-outline-secondary flex-shrink-0">Limpiar filtros</a>
-                {% endif %}
-            </form>
+            <div class="d-flex gap-2">
+                <input type="text" id="policy-search-input" class="form-control" style="min-width: 280px;" placeholder="Buscar por número o cliente" value="{{ request.GET.search|default:'' }}">
+                <button type="button" id="clear-filters-btn" class="btn btn-outline-secondary flex-shrink-0" style="display: none;">Limpiar filtros</button>
+            </div>
             <div class="btn-group" role="group">
-                <a href="?status=&search={{ request.GET.search|default:'' }}" class="btn btn-outline-secondary {% if not request.GET.status %}active{% endif %}">Todas</a>
-                <a href="?status=active&search={{ request.GET.search|default:'' }}" class="btn btn-outline-secondary {% if request.GET.status == 'active' %}active{% endif %}">Vigente</a>
-                <a href="?status=expired&search={{ request.GET.search|default:'' }}" class="btn btn-outline-secondary {% if request.GET.status == 'expired' %}active{% endif %}">Vencida</a>
-                <a href="?status=renewed&search={{ request.GET.search|default:'' }}" class="btn btn-outline-secondary {% if request.GET.status == 'renewed' %}active{% endif %}">Renovada</a>
+                <button type="button" class="btn btn-outline-secondary status-filter-btn active" data-status="">Todas</button>
+                <button type="button" class="btn btn-outline-secondary status-filter-btn" data-status="active">Vigente</button>
+                <button type="button" class="btn btn-outline-secondary status-filter-btn" data-status="expired">Vencida</button>
+                <button type="button" class="btn btn-outline-secondary status-filter-btn" data-status="renewed">Renovada</button>
             </div>
         </div>
     </div>
@@ -40,7 +36,7 @@
                 <th class="w-1"></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="policy-table-body">
             {% for policy in policies %}
                 <tr>
                     <td>{{ policy.number }}</td>
@@ -59,4 +55,84 @@
         </table>
     </div>
 </div>
+
+<script>
+(function () {
+    const searchInput = document.getElementById('policy-search-input');
+    const clearButton = document.getElementById('clear-filters-btn');
+    const statusButtons = document.querySelectorAll('.status-filter-btn');
+    const tableBody = document.getElementById('policy-table-body');
+
+    let currentStatus = '';
+    let debounceTimer = null;
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function updateClearButton() {
+        const hasFilter = searchInput.value.trim() !== '' || currentStatus !== '';
+        clearButton.style.display = hasFilter ? 'inline-block' : 'none';
+    }
+
+    function renderRows(policies) {
+        if (policies.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-4">No se encontraron pólizas.</td></tr>';
+            return;
+        }
+
+        tableBody.innerHTML = policies.map(function (policy) {
+            return '<tr>' +
+                '<td>' + escapeHtml(policy.number) + '</td>' +
+                '<td>' + escapeHtml(policy.client_name) + '</td>' +
+                '<td>' + escapeHtml(policy.status_display) + '</td>' +
+                '<td><div class="d-flex flex-wrap gap-1">' +
+                    '<a href="' + policy.detail_url + '" class="btn btn-sm btn-outline-primary">Detalle</a>' +
+                    '<a href="' + policy.update_url + '" class="btn btn-sm btn-outline-secondary">Editar</a>' +
+                    '<button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(\'' + policy.delete_url + '\', \'¿Eliminar la póliza ' + escapeHtml(policy.number) + '?\')">Eliminar</button>' +
+                '</div></td>' +
+            '</tr>';
+        }).join('');
+    }
+
+    function fetchPolicies() {
+        const params = new URLSearchParams();
+        if (currentStatus) params.set('status', currentStatus);
+        if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
+
+        fetch('{% url "policy-list-json" %}?' + params.toString())
+            .then(function (response) { return response.json(); })
+            .then(function (data) { renderRows(data.policies); })
+            .catch(function () {
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">Ocurrió un error al buscar.</td></tr>';
+            });
+
+        updateClearButton();
+    }
+
+    searchInput.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(fetchPolicies, 300);
+    });
+
+    statusButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            statusButtons.forEach(function (btn) { btn.classList.remove('active'); });
+            button.classList.add('active');
+            currentStatus = button.dataset.status;
+            fetchPolicies();
+        });
+    });
+
+    clearButton.addEventListener('click', function () {
+        searchInput.value = '';
+        currentStatus = '';
+        statusButtons.forEach(function (btn) { btn.classList.remove('active'); });
+        statusButtons[0].classList.add('active');
+        fetchPolicies();
+    });
+})();
+</script>
 {% endblock %}

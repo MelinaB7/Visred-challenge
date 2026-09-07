@@ -1,5 +1,6 @@
 from django import forms
 from .models import Client, Policy, PolicyType
+from django.contrib.auth.forms import AuthenticationForm
 
 
 class ClientForm(forms.ModelForm):
@@ -60,3 +61,10 @@ class PolicyTypeForm(forms.ModelForm):
     def clean_name(self):
         name = self.cleaned_data.get("name")
         return name.strip().capitalize()
+
+
+class StyledAuthenticationForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.update({"class": "form-control"})
+        self.fields["password"].widget.attrs.update({"class": "form-control"})

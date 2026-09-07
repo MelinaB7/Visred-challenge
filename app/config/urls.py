@@ -1,16 +1,17 @@
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
+from policies.forms import StyledAuthenticationForm
 from policies.views import (
     home, client_list, client_create, client_update, client_delete,
     policy_list, policy_create, policy_update, policy_delete, client_detail, policy_detail, 
-    policy_renew, policy_type_list, policy_type_create, policy_type_update
+    policy_renew, policy_type_list, policy_type_create, policy_type_update, policy_list_json
 )
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("login/", LoginView.as_view(template_name="login.html"), name="login"),
+    path("login/", LoginView.as_view(template_name="login.html", authentication_form=StyledAuthenticationForm), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("", home, name="home"),
     path("clients/", client_list, name="client-list"),
@@ -18,6 +19,7 @@ urlpatterns = [
     path("clients/<int:pk>/edit/", client_update, name="client-update"),
     path("clients/<int:pk>/delete/", client_delete, name="client-delete"),
     path("policies/", policy_list, name="policy-list"),
+    path("policies/search/", policy_list_json, name="policy-list-json"),
     path("policies/new/", policy_create, name="policy-create"),
     path("policies/<int:pk>/edit/", policy_update, name="policy-update"),
     path("policies/<int:pk>/delete/", policy_delete, name="policy-delete"),

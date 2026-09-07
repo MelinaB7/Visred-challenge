@@ -4,6 +4,8 @@ from .models import Client, Policy, PolicyType
 from .forms import ClientForm, PolicyForm, PolicyTypeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
+from django.urls import reverse
 
 @login_required
 def home(request):
@@ -63,8 +65,7 @@ def client_delete(request, pk):
 
 # ABM de Policy
 
-@login_required
-def policy_list(request):
+def _get_filtered_policies(request):
     for policy in Policy.objects.filter(status=Policy.Status.ACTIVE, is_deleted=False):
         policy.refresh_status()
 
@@ -80,8 +81,30 @@ def policy_list(request):
             Q(number__icontains=search) | Q(client__name__icontains=search)
         )
 
+    return policies
+
+
+@login_required
+def policy_list(request):
+    policies = _get_filtered_policies(request)
     return render(request, "policy_list.html", {"policies": policies})
 
+
+@login_required
+def policy_list_json(request):
+    policies = _get_filtered_policies(request)
+    data = [
+        {
+            "number": policy.number,
+            "client_name": policy.client.name,
+            "status_display": policy.get_status_display(),
+            "detail_url": reverse("policy-detail", args=[policy.pk]),
+            "update_url": reverse("policy-update", args=[policy.pk]),
+            "delete_url": reverse("policy-delete", args=[policy.pk]),
+        }
+        for policy in policies
+    ]
+    return JsonResponse({"policies": data})
 
 @login_required
 def policy_create(request):
